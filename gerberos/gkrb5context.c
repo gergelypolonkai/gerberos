@@ -5,12 +5,13 @@
  */
 
 #include <krb5.h>
+#include <glib.h>
 
 #include "gkrb5context.h"
 
 #undef g_krb5_context
 
-G_DEFINE_ABSTRACT_TYPE (GKrb5Context, g_krb5_context, G_TYPE_OBJECT);
+G_DEFINE_TYPE(GKrb5Context, g_krb5_context, G_TYPE_OBJECT);
 
 struct _GKrb5ContextPrivate {
 	krb5_context kerberos_context;
@@ -36,9 +37,6 @@ g_krb5_context_set_property (GObject *object, guint prop_id, const GValue *value
 static void
 g_krb5_context_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
-	GKrb5Context *kerberos_context;
-	GKrb5ContextPrivate *priv;
-
 	switch (prop_id)
 	{
 		default:
@@ -46,8 +44,6 @@ g_krb5_context_get_property (GObject *object, guint prop_id, GValue *value, GPar
 			break;
 	}
 }
-
-static guint signals[LAST_SIGNAL] = { 0 };
 
 static void
 g_krb5_context_finalize (GObject *object)
@@ -66,10 +62,12 @@ static void
 g_krb5_context_dispose(GObject *object)
 {
 	GKrb5Context *kerberos_context;
-	GKrb5Context *priv;
+	GKrb5ContextPrivate *priv;
 
 	kerberos_context = G_KRB5_CONTEXT(object);
 	priv = kerberos_context->priv;
+
+	krb5_free_context(priv->kerberos_context);
 
 	G_OBJECT_CLASS(g_krb5_context_parent_class)->dispose(object);
 }
@@ -92,6 +90,25 @@ static void
 g_krb5_context_init(GKrb5Context *kerberos_context)
 {
 	kerberos_context->priv = G_TYPE_INSTANCE_GET_PRIVATE(kerberos_context, G_TYPE_KRB5_CONTEXT, GKrb5ContextPrivate);
-	kertberos_context->priv->context = g_main_context_get_thread_default();
+	kerberos_context->priv->context = g_main_context_get_thread_default();
+}
+
+static void
+g_krb5_context_constructor(GType gtype, guint n_properties, GObjectConstructParam *properties)
+{
+	GObject *object;
+	GObjectClass *parent_class;
+	GKrb5ContextPrivate *priv;
+	GKrb5Context *kerberos_context;
+
+	krb5_error_code libkrb_error;
+
+	parent_class = G_OBJECT_CLASS(g_krb5_context_parent_class);
+	object = parent_class->constructor(gtype, n_properties, properties);
+
+	kerberos_context = G_KRB5_CONTEXT(object);
+	priv = kerberos_context->priv;
+
+	libkrb_error = krb5_init_context(&(priv->kerberos_context));
 }
 

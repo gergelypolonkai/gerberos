@@ -11,17 +11,18 @@
 #ifndef __G_KRB5_CONTEXT_H__
 #define __G_KRB5_CONTEXT_H__
 
-#include <gerberos/gerberos.h>
+#include <glib-object.h>
 
 G_BEGIN_DECLS
 
-#define G_TYPEKRB5_CONTEXT          (g_krb5_context_get_type ())
+#define G_TYPE_KRB5_CONTEXT         (g_krb5_context_get_type ())
 #define G_KRB5_CONTEXT(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), G_TYPE_KRB5_CONTEXT, GKrb5Context))
 #define G_KRB5_CONTEXT_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), G_TYPE_KRB5_CONTEXT, GKrb5ContextClass))
 #define G_IS_KRB5_CONTEXT(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), G_TYPE_KRB5_CONTEXT))
 #define G_IS_KRB5_CONTEXT_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), G_TYPE_KRB5_CONTEXT))
 #define G_KRB5_CONTEXT_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), G_TYPE_KRB5_CONTEXT, GKrb5ContextClass))
 
+typedef struct _GKrb5Context        GKrb5Context;
 typedef struct _GKrb5ContextClass   GKrb5ContextClass;
 typedef struct _GKrb5ContextPrivate GKrb5ContextPrivate;
 
